@@ -1,1 +1,3 @@
--Write rmsprop GradientDescent class
+-test rmsprop and NesterovDescent
+-test Softmax
+-implement recurrent networks
