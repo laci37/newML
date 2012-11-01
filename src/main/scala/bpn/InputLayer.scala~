@@ -1,0 +1,17 @@
+package bpn
+import mathext._
+import collection.mutable.Seq
+class InputLayer(override val size: Int) extends LayerOutput {
+  var y: Matrix = null
+  val outputs = Seq[Connection]()
+  var backwardCallback: Option[(Any) ⇒ Unit] = None
+  def backward() = if (backwardCallback.isDefined) backwardCallback.get(this)
+  def forward() = {
+    println(this + " forward begin")
+    outputs foreach { o ⇒ o.forward() }
+  }
+  def learn() = {
+    println(this + " learn begin")
+    outputs foreach { o ⇒ o.learn() }
+  }
+}

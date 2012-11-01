@@ -1,0 +1,17 @@
+package bpn
+import mathext._
+trait NetOutput {
+  var targets: Matrix
+  var forwardCallback: Option[(Any) => Unit] = None
+  var learnCallback: Option[(Any) => Unit] = None
+
+  def forward() = {
+    if (forwardCallback.isDefined) forwardCallback.get(this)
+  }
+
+  def backward() = in.backward()
+
+  def learn() = {
+    if (learnCallback.isDefined) learnCallback.get(this)
+  }
+}
