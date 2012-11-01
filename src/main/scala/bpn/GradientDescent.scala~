@@ -1,5 +1,0 @@
-package bpn
-import mathext._
-trait GradientDescend {
-  def getDelta(deriv:Matrix):Matrix
-}

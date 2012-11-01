@@ -1,4 +1,0 @@
-
-package object bpn {
-  var verbosity = 100
-}

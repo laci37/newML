@@ -1,8 +1,0 @@
-package bpn
-import mathext._
-trait LayerOutput {
- def size:Int
- def y:Matrix
- def backward()
- def forward()
-}
