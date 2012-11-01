@@ -1,3 +1,4 @@
 -test rmsprop and NesterovDescent
 -test Softmax
 -implement recurrent networks
+-create bpn factory perhaps with dsl for specifying structure
