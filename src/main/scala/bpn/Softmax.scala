@@ -38,4 +38,8 @@ class Softmax(_size: Int) extends LayerInput with NetOutput {
   def backward(): Unit = {
     inputs foreach { i ⇒ i.backward() }
   }
+  
+  var debug=""
+  
+  override def toString()=debug
 }
