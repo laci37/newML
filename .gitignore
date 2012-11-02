@@ -7,3 +7,5 @@ project/target/**
 .ensime
 
 .ensime_lucene/**
+
+**#*
