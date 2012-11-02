@@ -36,10 +36,22 @@ class Softmax(_size: Int) extends LayerInput with NetOutput {
   }
 
   def backward(): Unit = {
+    dEdz_cache=dEdz_calc
     inputs foreach { i ⇒ i.backward() }
   }
-  
-  var debug=""
-  
-  override def toString()=debug
+
+  protected var fwdCount = 0
+
+  override def forward() = {
+    fwdCount += 1
+    if (fwdCount == inputs.size) {
+      fwdCount = 0
+      y_cache = y_calc
+      super.forward()
+    }
+  }
+
+  var debug = ""
+
+  override def toString() = debug
 }
