@@ -31,5 +31,5 @@ class SoftmaxXor {
     Seq(RVector(Array(1d, 0d))),
     Seq(RVector(Array(0d, 1d))))
   val t = new Teacher(n, (inputs, targets))
-  for (i <- (1 to 100)) t.showBatch()
+  //for (i <- (1 to 100)) t.showBatch()
 }
