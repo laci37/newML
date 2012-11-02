@@ -27,7 +27,7 @@ class Softmax(_size: Int) extends LayerInput with NetOutput {
   protected var dEdz_cache: Matrix = null
   def dEdz = dEdz_cache
   protected def dEdz_calc: Matrix = {
-    targets - y
+    y - targets
   }
 
   def avgSumErr = {
