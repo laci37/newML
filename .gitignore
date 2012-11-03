@@ -9,3 +9,5 @@ project/target/**
 .ensime_lucene/**
 
 **#*
+
+.emacs.desktop
