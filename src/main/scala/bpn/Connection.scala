@@ -1,6 +1,7 @@
 package bpn
 import mathext._
-class Connection(val in: LayerOutput, val out: LayerInput, var gd: GradientDescent) extends ConnectionInput {
+import util.DebugInfo
+class Connection(val in: LayerOutput, val out: LayerInput, var gd: GradientDescent) extends ConnectionInput with DebugInfo {
   //setup structure
   in.outputs = in.outputs :+ this
   out.inputs = out.inputs :+ this
@@ -48,6 +49,6 @@ class Connection(val in: LayerOutput, val out: LayerInput, var gd: GradientDesce
     out.learn()
   }
 
-  var debug = ""
-  override def toString = debug
+
+
 }

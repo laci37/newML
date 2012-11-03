@@ -1,6 +1,7 @@
 package bpn
 import mathext._
-class Layer(_size: Int, actFun: (Double ⇒ Double), dactFun: (Double ⇒ Double)) extends LayerOutput with LayerInput {
+import util.DebugInfo
+class Layer(_size: Int, actFun: (Double ⇒ Double), dactFun: (Double ⇒ Double)) extends LayerOutput with LayerInput with DebugInfo {
 
   var inputs = Seq[Connection]()
 
@@ -56,6 +57,6 @@ class Layer(_size: Int, actFun: (Double ⇒ Double), dactFun: (Double ⇒ Double
     outputs foreach { o ⇒ o.learn() }
   }
 
-  var debug = ""
-  override def toString = debug
+  
+  
 }

@@ -1,7 +1,8 @@
 package bpn
 
 import mathext._
-class Softmax(_size: Int) extends LayerInput with NetOutput {
+import util.DebugInfo
+class Softmax(_size: Int) extends LayerInput with NetOutput with DebugInfo {
   var inputs = Seq[Connection]()
 
   protected var targets_cache: Matrix = null
@@ -36,7 +37,7 @@ class Softmax(_size: Int) extends LayerInput with NetOutput {
   }
 
   def backward(): Unit = {
-    dEdz_cache=dEdz_calc
+    dEdz_cache = dEdz_calc
     inputs foreach { i ⇒ i.backward() }
   }
 
@@ -50,8 +51,4 @@ class Softmax(_size: Int) extends LayerInput with NetOutput {
       super.forward()
     }
   }
-
-  var debug = ""
-
-  override def toString() = debug
 }
