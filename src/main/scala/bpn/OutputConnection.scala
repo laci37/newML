@@ -1,6 +1,6 @@
 package bpn
 import mathext._
-class OutputConnection(in: LayerOutput, Err: (Double, Double) => Double, dErr: (Double, Double) ⇒ Double) extends ConnectionInput with NetOutput {
+class OutputConnection(val in: LayerOutput, Err: (Double, Double) => Double, dErr: (Double, Double) ⇒ Double) extends ConnectionInput with NetOutput {
   //structure setup
   in.outputs = in.outputs :+ this
 
