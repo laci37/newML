@@ -33,6 +33,11 @@ class ForwardBuilder {
     def from(in: LayerOutput) = {
       new PartialConnection(in)
     }
+    
+    def withConstraint(cg:String)={ 
+      new ConnectionConstraint(cg)
+    }
+    
   }
 
   object make {
@@ -60,45 +65,49 @@ class ForwardBuilder {
       res
     }
 
-    def softmax(size:Int) ={ 
-      val res= new NameWrapper(new Softmax(size))
-      if(autoBias) connection from bias to res
+    def softmax(size: Int) = {
+      val res = new NameWrapper(new Softmax(size))
+      if (autoBias) connection from bias to res.inner
       outputs = res :: outputs
       res
     }
   }
 
   //member classes and their implicit casts
+  class ConnectionConstraint(val cg: String) {
+    def from(in: LayerOutput) = {
+      val res = new PartialConnection(in)
+      res.cg = Some(cg)
+      res
+    }
+  }
+
   class PartialConnection(val in: LayerOutput) {
+    var cg: Option[String] = None
     /**
      * used in 'connection from ... to ...'
      */
     def to(out: LayerInput) = {
-      new FullConnection(in, out)
+      new FullConnection(in, out, cg)
     }
 
-    /**
-     * used to name the input layer
-     */
-    def named(name: String) = {
-      nameMap(name) = in
-      in.debug = name
-      this
-    }
   }
 
   implicit def FullConnection2Connection(meta: FullConnection): Connection = meta.inner
-  class FullConnection(val in: LayerOutput, val out: LayerInput) {
-    val inner = new Connection(in, out, gd())
-    def named(name: String) = {
-      nameMap(name) = out
-      out.debug = name
-      this
+  class FullConnection(val in: LayerOutput, val out: LayerInput, val cg: Option[String]) {
+    val inner = if (cg.isEmpty) new Connection(in, out, gd())
+    else {
+      import collection.mutable.Set
+      val res = new ConstraintedConnection(in, out, gd())
+      val cgSet = nameMap(cg.get).asInstanceOf[Set[ConstraintedConnection]]
+      cgSet foreach { con => con addConstraint res }
+      cgSet += res
+      res
     }
   }
 
-  implicit def NameWrapperExtract[T<:DebugInfo](nw:NameWrapper[T]):T=nw.inner
-  class NameWrapper[T<:DebugInfo](val inner:T) { 
+  implicit def NameWrapperExtract[T <: DebugInfo](nw: NameWrapper[T]): T = nw.inner
+  class NameWrapper[T <: DebugInfo](val inner: T) {
     def named(name: String) = {
       nameMap(name) = inner
       inner.debug = name

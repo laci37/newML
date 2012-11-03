@@ -1,8 +1,8 @@
 package bpn
 import collection.mutable.Set
 import mathext._
-class ConstraintedConnection(in: Layer, out: Layer, gd: GradientDescent) extends Connection(in, out, gd) {
- val constraints=Set[ConstraintedConnection]()
+class ConstraintedConnection(in: LayerOutput, out: LayerInput, gd: GradientDescent) extends Connection(in, out, gd) {
+ var constraints=Set[ConstraintedConnection]()
  
  def addConstraint(that:ConstraintedConnection)={
    that.weights=this.weights
