@@ -1,6 +1,7 @@
 package bpn
 import mathext._
-trait LayerOutput {
+import util.DebugInfo
+trait LayerOutput extends DebugInfo{
  def size:Int
  def y:Matrix
  var outputs:Seq[ConnectionInput]

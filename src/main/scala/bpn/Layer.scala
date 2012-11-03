@@ -1,7 +1,7 @@
 package bpn
 import mathext._
 import util.DebugInfo
-class Layer(_size: Int, actFun: (Double ⇒ Double), dactFun: (Double ⇒ Double)) extends LayerOutput with LayerInput with DebugInfo {
+class Layer(_size: Int, actFun: (Double ⇒ Double), dactFun: (Double ⇒ Double)) extends LayerOutput with LayerInput {
 
   var inputs = Seq[Connection]()
 
@@ -16,7 +16,7 @@ class Layer(_size: Int, actFun: (Double ⇒ Double), dactFun: (Double ⇒ Double
   protected var sumz: Matrix = null
   def y = y_cache
   protected def y_calc: Matrix = {
-    sumz = (for (i ← inputs) yield i.z).fold(Matrix(inputs(0).z.rows, size)) { (a, b) ⇒(a+b)}
+    sumz = (for (i ← inputs) yield i.z).fold(Matrix(inputs(0).z.rows, size)) { (a, b) ⇒ (a + b) }
     sumz.applyFun(actFun)
   }
 
@@ -56,7 +56,14 @@ class Layer(_size: Int, actFun: (Double ⇒ Double), dactFun: (Double ⇒ Double
     if (bpn.verbosity >= 100) println(this + " learn")
     outputs foreach { o ⇒ o.learn() }
   }
-
-  
-  
 }
+
+class SigmoidLayer(size: Int) extends Layer(size, SigmoidLayer.sig _, SigmoidLayer.dsig _)
+
+object SigmoidLayer {
+  import math._
+  def sig(x: Double) = 1d / (1d + exp(-x))
+  def dsig(x: Double) = sig(x) * (1d - sig(x))
+}
+
+class LinearLayer(size: Int) extends Layer(size, identity, x => 1d)

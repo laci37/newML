@@ -1,6 +1,7 @@
 package bpn
 import mathext._
-trait LayerInput {
+import util.DebugInfo
+trait LayerInput extends DebugInfo{
   def size: Int
   def dEdz: Matrix
   var inputs:Seq[Connection]
