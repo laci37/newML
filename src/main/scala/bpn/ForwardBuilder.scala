@@ -19,6 +19,8 @@ class ForwardBuilder {
 
   //member functions
   def build() = new Net(inputs.reverse, outputs.reverse, bias)
+
+  //implicit casts not belonging to member classes
   implicit def layerInputByName(name: String): LayerInput = nameMap(name).asInstanceOf[LayerInput]
   implicit def layerOutputByName(name: String): LayerOutput = nameMap(name).asInstanceOf[LayerOutput]
 
@@ -41,19 +43,28 @@ class ForwardBuilder {
 
   object create {
     def input(size: Int) = {
-      val res = new InputLayerExt(new InputLayer(size))
+      val res = new NameWrapper(new InputLayer(size))
       inputs = res.inner :: inputs
       res
     }
 
     def sigmoid(size: Int) = {
-      val res = new LayerExt(new SigmoidLayer(size))
+      val res = new NameWrapper(new SigmoidLayer(size))
       if (autoBias) connection from bias to res.inner
+      res
     }
 
     def linear(size: Int) = {
-      val res = new LayerExt(new LinearLayer(size))
+      val res = new NameWrapper(new LinearLayer(size))
       if (autoBias) connection from bias to res.inner
+      res
+    }
+
+    def softmax(size:Int) ={ 
+      val res= new NameWrapper(new Softmax(size))
+      if(autoBias) connection from bias to res
+      outputs = res :: outputs
+      res
     }
   }
 
@@ -86,17 +97,8 @@ class ForwardBuilder {
     }
   }
 
-  implicit def InputLayerExt2InputLayer(e: InputLayerExt): InputLayer = e.inner
-  class InputLayerExt(val inner: InputLayer) {
-    def named(name: String) = {
-      nameMap(name) = inner
-      inner.debug = name
-      this
-    }
-  }
-
-  implicit def LayerExt2Layer(e: LayerExt): Layer = e.inner
-  class LayerExt(val inner: Layer) {
+  implicit def NameWrapperExtract[T<:DebugInfo](nw:NameWrapper[T]):T=nw.inner
+  class NameWrapper[T<:DebugInfo](val inner:T) { 
     def named(name: String) = {
       nameMap(name) = inner
       inner.debug = name
