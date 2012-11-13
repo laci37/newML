@@ -14,7 +14,7 @@ class ConstraintedConnection(in: LayerOutput, out: LayerInput, gd: GradientDesce
  
  override def learn()={
    val gradientsum=
-     (for(c<-constraints) yield c.avgdEdw).fold(Matrix(in.size,out.size))((a, b) ⇒ (a + b))+avgdEdw
+     (for(c<-constraints) yield c.dEdw).fold(Matrix(in.size,out.size))((a, b) ⇒ (a + b))+dEdw
    weights+=gd.getDelta(gradientsum*(1d/constraints.size+1))
    out.learn()
  }

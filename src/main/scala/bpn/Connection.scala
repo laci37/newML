@@ -16,13 +16,11 @@ class Connection(val in: LayerOutput, val out: LayerInput, var gd: GradientDesce
   def dEdy = dEdy_cache
   protected def dEdy_calc: Matrix = (weights × out.dEdz.transpose).transpose
 
-  var dEdw_cache: Seq[Matrix] = null
+  var dEdw_cache: Matrix = null
   def dEdw = dEdw_cache
-  protected def dEdw_calc: Seq[Matrix] = {
-    for (i <- 0 to in.y.rows - 1) yield in.y(i).transpose × out.dEdz(i)
+  protected def dEdw_calc: Matrix = {
+    in.y.transpose × out.dEdz * (1d/in.y.rows)
   }
-
-  def avgdEdw = dEdw.fold(Matrix(in.size, out.size))((a, b) ⇒ (a + b)) * (1d / dEdw.size)
 
   def forward() = {
     if (bpn.verbosity >= 100) println(this + " forward")
@@ -44,7 +42,7 @@ class Connection(val in: LayerOutput, val out: LayerInput, var gd: GradientDesce
   def learn() = {
     if (bpn.verbosity >= 100) println(this + " learn")
     if (bpn.verbosity >= 200) println(this + " before w=" + weights)
-    weights += gd.getDelta(avgdEdw)
+    weights += gd.getDelta(dEdw)
     if (bpn.verbosity >= 200) println(this + " after w=" + weights)
     out.learn()
   }
