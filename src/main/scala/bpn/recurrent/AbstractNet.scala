@@ -21,6 +21,6 @@ class AbstractNet(layers: Seq[AbstractLayer], conns: Set[(AbstractLayer, Abstrac
 }
 
 abstract class AbstractLayer(val size: Int) extends util.DebugInfo
-case class AbstractSigmoid(size: Int) extends AbstractLayer(size)
-case class AbstractLinear(size: Int) extends AbstractLayer(size)
-case class AbstractInput(size: Int) extends AbstractLayer(size)
+case class AbstractSigmoid(override val size: Int) extends AbstractLayer(size)
+case class AbstractLinear(override val size: Int) extends AbstractLayer(size)
+case class AbstractInput(override val size: Int) extends AbstractLayer(size)

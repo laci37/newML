@@ -2,7 +2,7 @@ package bpntest
 import bpn._
 import math._
 import mathext._
-class BuilderXor {
+class RmsXor {
 
   val n = {
     val bdr = new ForwardBuilder
