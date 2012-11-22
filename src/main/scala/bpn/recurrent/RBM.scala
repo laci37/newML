@@ -8,13 +8,16 @@ class RBM(val visibleSize: Int, val hiddenSize: Int) {
 
   protected var _visExpect: RVector = RVector(visibleSize) //expectation values for states of units
   protected var _hidExpect: RVector = RVector(hiddenSize)
-  protected var _tie: Option[RVector] = None // setting this to Some(_) ties visible state vector to the value 
+  var tie: Option[RVector] = None // setting this to Some(_) ties visible state vector to the value 
 
   def visExpect = _tie.getOrElse(_visExpect)
   def hidExpect = _hidExpect
 
   def sigma(x: Double) = 1d / (1 + math.exp(-x))
-
+  
+  /**
+   * updates visible vectors axpected value, resets tie
+   */
   def updateVisible() = {
     _tie = None
     _visExpect = (hidExpect × weights).applyFun(sigma _).toRVector
@@ -31,5 +34,6 @@ class RBM(val visibleSize: Int, val hiddenSize: Int) {
   def sampleHidden() = hidExpect.applyFun { d: Double => d ? 1d | 0d }
   def sampleVisible() = visExpect.applyFun { d: Double => d ? 1d | 0d }
 
+  def updateCycle()= updateVisible(); updateHidden()
 }
 
