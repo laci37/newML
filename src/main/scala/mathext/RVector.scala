@@ -1,11 +1,13 @@
 package mathext
 trait RVector extends Matrix {
   override val rows=1
+  def toArray :Array[Double]
 }
 
 object RVector{
   def apply(cols:Int):RVector= new RVectorBase(cols)
   def apply(data:Array[Double]):RVector=new RVectorBase(data)
+  
 }
 
 class RVectorBase(override val cols:Int) extends MatrixBase(1,cols) with RVector{
@@ -15,4 +17,6 @@ class RVectorBase(override val cols:Int) extends MatrixBase(1,cols) with RVector
   }
   
   override def transpose()=CVector(arr(0))
+
+  def toArray()=arr(0).clone
 }

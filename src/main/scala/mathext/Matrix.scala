@@ -1,6 +1,6 @@
 package mathext
 
-trait Matrix {
+private[mathext] trait Matrix {
   val rows: Int
   val cols: Int
   //def clone(): Matrix
