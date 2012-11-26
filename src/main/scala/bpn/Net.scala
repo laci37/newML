@@ -1,5 +1,5 @@
 package bpn
-import mathext._
+import breeze.linalg._
 /**
  * Class for managing a neural network.
  */
@@ -8,7 +8,7 @@ class Net(val inputs: Seq[InputLayer], val outputs: Seq[NetOutput], val bias: Bi
   /**
    * Sets all the inputs to the network
    */
-  def setInputs(data: Seq[Matrix]) = {
+  def setInputs(data: Seq[DenseMatrix[Double]]) = {
     for (i ← (0 to inputs.size - 1)) inputs(i).y = data(i)
     bias.setBatchSize(data(0).rows)
   }
@@ -16,7 +16,7 @@ class Net(val inputs: Seq[InputLayer], val outputs: Seq[NetOutput], val bias: Bi
   /**
    * Sets the target outputs of the network
    */
-  def setTargets(data: Seq[Matrix]) = {
+  def setTargets(data: Seq[DenseMatrix[Double]]) = {
     for (i ← (0 to outputs.size - 1)) outputs(i).targets = data(i)
   }
 

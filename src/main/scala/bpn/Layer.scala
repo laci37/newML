@@ -1,6 +1,7 @@
 package bpn
-import mathext._
+
 import util.DebugInfo
+import breeze.linalg._
 class Layer(_size: Int, actFun: (Double ⇒ Double), dactFun: (Double ⇒ Double)) extends LayerOutput with LayerInput {
 
   var inputs = Seq[Connection]()
@@ -12,20 +13,20 @@ class Layer(_size: Int, actFun: (Double ⇒ Double), dactFun: (Double ⇒ Double
   protected var back_count = 0
   def size = _size
 
-  protected var y_cache: Matrix = null
-  protected var sumz: Matrix = null
+  protected var y_cache: DenseMatrix[Double] = null
+  protected var sumz: DenseMatrix[Double] = null
   def y = y_cache
-  protected def y_calc: Matrix = {
-    sumz = (for (i ← inputs) yield i.z).fold(Matrix(inputs(0).z.rows, size)) { (a, b) ⇒ (a + b) }
-    sumz.applyFun(actFun)
+  protected def y_calc: DenseMatrix[Double] = {
+    sumz = (for (i ← inputs) yield i.z).fold(DenseMatrix.zeros[Double](size,inputs(0).z.cols)) { (a, b) ⇒ (a + b) }
+    sumz.values.map(actFun)
   }
 
-  protected var dEdz_cache: Matrix = null
+  protected var dEdz_cache: DenseMatrix[Double] = null
   def dEdz = dEdz_cache
-  protected def dEdz_calc: Matrix = { // check
-    val sumdEdy = (for (o ← outputs) yield o.dEdy).fold(Matrix(inputs(0).z.rows, size))((a, b) ⇒ (a + b))
-    val dydz = sumz.applyFun(dactFun)
-    sumdEdy.applyFun { (i: Int, j: Int, d: Double) => d * dydz(i, j) }
+  protected def dEdz_calc: DenseMatrix[Double] = {
+    val sumdEdy = (for (o ← outputs) yield o.dEdy).fold(DenseMatrix.zeros[Double](size, inputs(0).z.cols))((a, b) ⇒ (a + b))
+    val dydz = sumz.values.map(dactFun)
+    sumdEdy :* dydz
   }
 
   def forward(): Unit = {

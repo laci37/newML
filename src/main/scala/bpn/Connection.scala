@@ -1,25 +1,26 @@
 package bpn
-import mathext._
+import breeze.linalg._
+import mathext.Implicits._
 import util.DebugInfo
 class Connection(val in: LayerOutput, val out: LayerInput, var gd: GradientDescent) extends ConnectionInput with DebugInfo {
   //setup structure
   in.outputs = in.outputs :+ this
   out.inputs = out.inputs :+ this
 
-  var weights = Matrix.fill(in.size, out.size)(scala.util.Random.nextDouble() - 0.5)
+  var weights = DenseMatrix.tabulate(in.size,out.size)((r,c)=>rand.nextDouble()-0.5)
 
-  var z_cache: Matrix = null //z values, rows represent samples, columns represent neurons 
+  var z_cache: DenseMatrix[Double] = null //z values, columns represent samples, rows represent neurons 
   def z = z_cache
-  protected def z_calc = (in.y × weights)
+  protected def z_calc = (in.y.t * weights)
 
-  var dEdy_cache: Matrix = null //error derivatives for incoming outputs rows represent samples, columns neurons
+  var dEdy_cache: DenseMatrix[Double] = null //error derivatives for incoming outputs cols represent samples, rows neurons
   def dEdy = dEdy_cache
-  protected def dEdy_calc: Matrix = (weights × out.dEdz.transpose).transpose
+  protected def dEdy_calc: DenseMatrix[Double] = (weights * out.dEdz)
 
-  var dEdw_cache: Matrix = null
+  var dEdw_cache: DenseMatrix[Double] = null
   def dEdw = dEdw_cache
-  protected def dEdw_calc: Matrix = {
-    in.y.transpose × out.dEdz * (1d/in.y.rows)
+  protected def dEdw_calc: DenseMatrix[Double] = {
+    in.y * out.dEdz.t :/ in.y.cols.toDouble
   }
 
   def forward() = {

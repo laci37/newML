@@ -1,10 +1,11 @@
 package bpn
 import mathext._
+import breeze.linalg._
 class InputLayer(override val size: Int) extends LayerOutput {
-  protected var y_cache: Matrix = null
+  protected var y_cache: DenseMatrix[Double] = null
   def y = y_cache
-  def y_=(value: Matrix) = {
-    if (value.cols != size) throw new IllegalArgumentException("Bad matrix size")
+  def y_=(value: DenseMatrix[Double]) = {
+    if (value.rows != size) throw new IllegalArgumentException("Bad matrix size")
     y_cache = value
   }
 

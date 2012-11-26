@@ -1,14 +1,14 @@
 package bpn
-import mathext._
+import breeze.linalg._
 import math._
 class RmsProp extends GradientDescent {
-  protected var meanSquare: Matrix = null
+  protected var meanSquare: DenseMatrix[Double] = null
   var residual = 0.9
-  def getDelta(gradient: Matrix) = {
-    if (meanSquare == null) meanSquare = gradient.applyFun(x => x * x)
+  def getDelta(gradient: DenseMatrix[Double]) = {
+    if (meanSquare == null) meanSquare = gradient.values.map(x => x * x)
     else {
-      meanSquare = meanSquare * residual + gradient.applyFun(x => x * x) * (1 - residual)
+      meanSquare = meanSquare * residual + gradient.values.map(x => x * x) * (1 - residual)
     }
-    gradient.applyFun((i, j, d) => -d / sqrt(meanSquare(i, j)))
+    gradient :/ meanSquare * -1d
   }
 }

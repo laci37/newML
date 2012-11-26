@@ -1,9 +1,10 @@
 package bpn
 import mathext._
 import util.DebugInfo
+import breeze.linalg._
 trait LayerInput extends DebugInfo{
   def size: Int
-  def dEdz: Matrix
+  def dEdz: DenseMatrix[Double]
   var inputs:Seq[Connection]
   def forward()
   def learn()

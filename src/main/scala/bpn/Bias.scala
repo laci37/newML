@@ -1,8 +1,8 @@
 package bpn
-import mathext._
+import  breeze.linalg._
 class BiasLayer extends LayerOutput {
   val size = 1
-  var y: Matrix = null
+  var y: DenseMatrix[Double] = null
   var outputs = Seq[ConnectionInput]()
   var backwardCallback: Option[(Any) ⇒ Unit] = None
   def backward() = {
@@ -21,6 +21,6 @@ class BiasLayer extends LayerOutput {
   }
 
   def setBatchSize(size: Int) = {
-    y = Matrix.fill(size, 1)(1d)
+    y = DenseMatrix.tabulate(1,size)((r,c)=>1d)
   }
 }

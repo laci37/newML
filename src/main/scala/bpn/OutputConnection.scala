@@ -1,18 +1,18 @@
 package bpn
-import mathext._
+import breeze.linalg._
 class OutputConnection(val in: LayerOutput, Err: (Double, Double) => Double, dErr: (Double, Double) ⇒ Double) extends ConnectionInput with NetOutput {
   //structure setup
   in.outputs = in.outputs :+ this
 
-  protected var targets_cache: Matrix = null
+  protected var targets_cache: DenseMatrix[Double] = null
   def targets = targets_cache
-  def targets_=(value: Matrix) = {
+  def targets_=(value: DenseMatrix[Double]) = {
     if (value.cols != in.size) throw new IllegalArgumentException("Bad matrix size")
     targets_cache = value
   }
 
   def dEdy = {
-    in.y.applyFun((i, j, d) => dErr(targets(i, j), d))
+    DenseMatrix.tabulate(in.y.rows, in.y.cols)((i, j) => dErr(targets(i, j), in.y(i, j)))
   }
 
   def backward() = {

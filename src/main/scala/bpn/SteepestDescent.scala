@@ -1,7 +1,7 @@
 package bpn
-import mathext._
+import breeze.linalg._
 class SteepestDescent(var mu: Double) extends GradientDescent {
-  def getDelta(deriv: Matrix) = {
+  def getDelta(deriv: DenseMatrix[Double]) = {
      deriv *(-mu)
   }
 }

@@ -1,5 +1,5 @@
 package bpn
-import mathext._
+import breeze.linalg._
 trait GradientDescent {
-  def getDelta(deriv:Matrix):Matrix
+  def getDelta(deriv:DenseMatrix[Double]):DenseMatrix[Double]
 }

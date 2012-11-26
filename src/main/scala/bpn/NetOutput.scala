@@ -1,5 +1,5 @@
 package bpn
-import mathext._
+import breeze.linalg._
 /**
  * Trait for calsses representing an output from a neural network
  */
@@ -7,7 +7,7 @@ trait NetOutput {
   /**
    * target values to calculate the error and error derivatives from.
    */
-  var targets: Matrix
+  var targets: DenseMatrix[Double]
   
   /**
    * Calling this method starts a backward pass. To do the full pass,
