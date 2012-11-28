@@ -20,7 +20,7 @@ class ConstraintedConnection(in: LayerOutput, out: LayerInput, gd: GradientDesce
      val delta=gd.getDelta(gradientsum:/(constraints.size+1).toDouble)
      for(c<-constraints) c.changeWeights(delta,this)
      weights+=delta
-   }
+   } else changedWeights=false
    out.learn()
  }
 
