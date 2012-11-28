@@ -29,27 +29,36 @@ class ConnectionTest extends FunSuite{
     def backward()={backwd=true }
   }
 
+  //init function
+  def initInput()={ 
+    new MockInput
+  }
+
+  def initOutput()= new MockOutput
+
+  def initConnection(in:LayerOutput,out:LayerInput)= new Connection(in,out,new SteepestDescent(0.1))
+
   test("should forward prop") { 
-    val in= new MockInput
-    val out=new MockOutput
-    val c=new Connection(in,out, new SteepestDescent(0.1))
+    val in= initInput()
+    val out=initOutput()
+    val c=initConnection(in,out)
     c.forward()
     assert(out.fwd)
   }
 
   test ("should backprop") { 
-    val in= new MockInput
-    val out=new MockOutput
-    val c=new Connection(in,out, new SteepestDescent(0.1))
+    val in= initInput()
+    val out=initOutput()
+    val c=initConnection(in,out)
     c.forward
     c.backward
     assert(in.backwd)
   }
 
   test("should learn prop"){ 
-    val in= new MockInput
-    val out=new MockOutput
-    val c=new Connection(in,out, new SteepestDescent(0.1))
+    val in= initInput()
+    val out=initOutput()
+    val c=initConnection(in,out)
     c.forward
     c.backward
     c.learn
@@ -57,12 +66,12 @@ class ConnectionTest extends FunSuite{
   }
 
   test("forward and weight matrix size checks"){ 
-    val in= new MockInput
-    val out=new MockOutput
+    val in= initInput()
+    val out=initOutput()
     in.size=7
     in.y= DenseMatrix.zeros(7,11)
     out.size=3
-    val c=new Connection(in,out, new SteepestDescent(0.1))
+    val c=initConnection(in,out)
     c.forward
     assert(c.z.rows===3)
     assert(c.z.cols===11)
@@ -71,13 +80,13 @@ class ConnectionTest extends FunSuite{
   }
 
   test("backward and dEdw matrix size checks"){ 
-    val in= new MockInput
-    val out=new MockOutput
+    val in= initInput()
+    val out=initOutput()
     in.size=6
     in.y=DenseMatrix.zeros(6,23)
     out.size=11
     out.dEdz=DenseMatrix.zeros(11,23)
-    val c=new Connection(in,out, new SteepestDescent(0.1))
+    val c=initConnection(in,out)
     c.forward
     c.backward
     assert(c.dEdy.rows===6)
