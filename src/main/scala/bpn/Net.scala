@@ -10,7 +10,7 @@ class Net(val inputs: Seq[InputLayer], val outputs: Seq[NetOutput], val bias: Bi
    */
   def setInputs(data: Seq[DenseMatrix[Double]]) = {
     for (i ← (0 to inputs.size - 1)) inputs(i).y = data(i)
-    bias.setBatchSize(data(0).rows)
+    bias.setBatchSize(data(0).cols)
   }
 
   /**

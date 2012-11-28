@@ -21,6 +21,6 @@ class BiasLayer extends LayerOutput {
   }
 
   def setBatchSize(size: Int) = {
-    y = DenseMatrix.tabulate(1,size)((r,c)=>1d)
+    y = DenseVector.ones[Double](size).t
   }
 }

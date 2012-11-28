@@ -21,7 +21,7 @@ class OutputConnection(val in: LayerOutput, Err: (Double, Double) => Double, dEr
   }
 
   def avgSumErr = {
-    (for (i <- (0 to targets.rows - 1)) yield (for (j <- 0 to targets.cols - 1) yield Err(targets(i, j), in.y(i, j))).sum).sum / targets.rows
+    (for (i <- (0 to targets.rows - 1)) yield (for (j <- 0 to targets.cols - 1) yield Err(targets(i, j), in.y(i, j))).sum).sum  / targets.cols
   }
 
   override def forward() = {

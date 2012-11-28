@@ -17,7 +17,7 @@ class Teacher(val n: Net, var examples: (Seq[Seq[DenseVector[Double]]], Seq[Seq[
     DenseVector.horzcat[Double](examples._1(i) :_*)
     val targets = for (i <- (0 to examples._2(0).size - 1)) yield //iterate outputs
     //iterate over all examples and construct matrix
-      DenseVector.horzcat[Double](examples._1(i) :_*)
+      DenseVector.horzcat[Double](examples._2(i) :_*)
 
     (inputs, targets)
   }

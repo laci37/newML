@@ -11,7 +11,7 @@ class Connection(val in: LayerOutput, val out: LayerInput, var gd: GradientDesce
 
   var z_cache: DenseMatrix[Double] = null //z values, columns represent samples, rows represent neurons 
   def z = z_cache
-  protected def z_calc = (in.y.t * weights)
+  protected def z_calc = (in.y.t * weights).t
 
   var dEdy_cache: DenseMatrix[Double] = null //error derivatives for incoming outputs cols represent samples, rows neurons
   def dEdy = dEdy_cache

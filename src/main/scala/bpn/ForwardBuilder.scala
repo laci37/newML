@@ -107,11 +107,12 @@ class ForwardBuilder {
   }
 
   implicit def NameWrapperExtract[T <: DebugInfo](nw: NameWrapper[T]): T = nw.inner
+
   class NameWrapper[T <: DebugInfo](val inner: T) {
-    def named(name: String) = {
+    def named(name: String):T = {
       nameMap(name) = inner
       inner.debug = name
-      this
+      inner
     }
   }
 }
