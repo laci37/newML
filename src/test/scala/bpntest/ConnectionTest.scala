@@ -4,31 +4,7 @@ import breeze.linalg._
 import org.scalatest.FunSuite
 
 class ConnectionTest extends FunSuite{ 
-  //mocks
-  class MockInput extends LayerOutput{ 
-    var size:Int=1
-    var y:DenseMatrix[Double]=DenseMatrix.zeros(1,1)
-    var outputs=Seq[ConnectionInput]()
-    var fwd=false
-    def forward()={fwd=true }
-    var lrn=false
-    def learn()={lrn=true }
-    var backwd=false
-    def backward()={backwd=true }
-  }
-
-  class MockOutput extends LayerInput{ 
-    var size: Int=1
-    var dEdz: DenseMatrix[Double]=DenseMatrix.zeros(1,1)
-    var inputs= Seq[Connection]()
-    var fwd=false
-    def forward()={fwd=true }
-    var lrn=false
-    def learn()={lrn=true }
-    var backwd=false
-    def backward()={backwd=true }
-  }
-
+  import ConnectionTest._
   //init function
   def initInput()={ 
     new MockInput
@@ -89,9 +65,35 @@ class ConnectionTest extends FunSuite{
     val c=initConnection(in,out)
     c.forward
     c.backward
-    assert(c.dEdy.rows===6)
     assert(c.dEdy.cols===23)
+    assert(c.dEdy.rows===6)
     assert(c.dEdw.rows===6)
     assert(c.dEdw.cols===11)
+  }
+}
+
+object ConnectionTest { 
+  class MockInput extends LayerOutput{ 
+    var size:Int=1
+    var y:DenseMatrix[Double]=DenseMatrix.zeros(1,1)
+    var outputs=Seq[ConnectionInput]()
+    var fwd=false
+    def forward()={fwd=true }
+    var lrn=false
+    def learn()={lrn=true }
+    var backwd=false
+    def backward()={backwd=true }
+  }
+
+  class MockOutput extends LayerInput{ 
+    var size: Int=1
+    var dEdz: DenseMatrix[Double]=DenseMatrix.zeros(1,1)
+    var inputs= Seq[Connection]()
+    var fwd=false
+    def forward()={fwd=true }
+    var lrn=false
+    def learn()={lrn=true }
+    var backwd=false
+    def backward()={backwd=true }
   }
 }

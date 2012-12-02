@@ -5,20 +5,16 @@ import org.scalatest._
 
 class XorTest extends FunSuite { 
   
-  val dataset= (Seq(
-    Seq(DenseVector(Array(0d,0d))),
-    Seq(DenseVector(Array(0d,1d))),
-    Seq(DenseVector(Array(1d,0d))),
-    Seq(DenseVector(Array(1d,1d)))
-  ),
-  Seq(
-    Seq(DenseVector(Array(0d))),
-     Seq(DenseVector(Array(1d))),
-     Seq(DenseVector(Array(1d))),
-     Seq(DenseVector(Array(0d)))
-  ))
-  
-  test("running xortest on default parameters") { 
+  val dataset= Seq(
+    new BpnExample(DenseVector(0d,0d), DenseVector(0d)),
+    new BpnExample(DenseVector(0d,1d), DenseVector(1d)),
+    new BpnExample(DenseVector(1d,0d), DenseVector(1d)),
+    new BpnExample(DenseVector(1d,1d), DenseVector(0d))
+  )
+
+  bpn.verbosity=0 //switch off al diag messages
+
+  def initNet()={ 
     val bdr = new ForwardBuilder()
     import bdr._
     create input 2 named "in"
@@ -27,13 +23,17 @@ class XorTest extends FunSuite {
     connection from "in" to "hid"
     connection from "hid" to "out"
     make output "out"
-    val net = build()
+    build()
+  }
+  
+  test("running xortest on default parameters") {
+    val net = initNet()
     val t= new Teacher(net,dataset)
-    t.showExample(t.fullBatchMatrices)
+    t.showExample(t.fullBatch)
     val before=net.outputs(0).avgSumErr
-    for(i<-(1 to 100)) t.showBatch()
+    t.learn(100)
     val after=net.outputs(0).avgSumErr
-    assert(after<before, "error did not decrease in 100 epochs")
+    assert(after<before, "error did not decrease in 100 epochs\n pre: "+before+" post: "+after)
   }
 
 }
