@@ -3,6 +3,7 @@ package bpn
 import mathext.Implicits
 import breeze.linalg._
 import util.DebugInfo
+import util.NanChecker._
 class Softmax(_size: Int) extends LayerInput with NetOutput with DebugInfo {
   var inputs = Seq[Connection]()
 
@@ -19,20 +20,27 @@ class Softmax(_size: Int) extends LayerInput with NetOutput with DebugInfo {
   def y = y_cache
   // TODO: avoid exp (might produce large numbers, and unstable calculation)
   protected def y_calc: DenseMatrix[Double] = {
-     val sumz: DenseMatrix[Double] = (for(i<-inputs) yield i.z).fold(DenseMatrix.zeros[Double](size,inputs(0).z.cols))((a:DenseMatrix[Double],b:DenseMatrix[Double])=> (a + b).asInstanceOf[DenseMatrix[Double]] ) 
+     val sumz: DenseMatrix[Double] = (for(i<-inputs) yield i.z).reduceLeft(_ + _)
      val expterms = sumz.values.map(math.exp _) 
-     val normalizing = sum(expterms,Axis._1)
-     expterms :/ DenseMatrix.tabulate(normalizing.size,expterms.cols)((r,c) =>normalizing(r))
+     val normalizing = sum(expterms,Axis._0)
+     nanCheck(sumz)
+     nanCheck(expterms)
+     nanCheck(normalizing)
+     val res= expterms :/ DenseMatrix.tabulate(expterms.rows,expterms.cols)((r,c) =>normalizing(0,c))
+     nanCheck(res)
+     res
   }
 
   protected var dEdz_cache: DenseMatrix[Double]  = null
   def dEdz = dEdz_cache
   protected def dEdz_calc: DenseMatrix[Double] = {
-    y - targets
+    nanCheck(y - targets)
+    y-targets
   }
 
   def avgSumErr = {
-    val sumErr = (y :* targets).values.map(x=> -math.log(x)).sum 
+    val sumErr = -sum(targets :* y.values.map(math.log _))
+    nanCheck(sumErr)
     sumErr / y.cols
   }
 

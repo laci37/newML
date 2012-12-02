@@ -7,8 +7,8 @@ class RmsProp extends GradientDescent {
   def getDelta(gradient: DenseMatrix[Double]) = {
     if (meanSquare == null) meanSquare = gradient.values.map(x => x * x)
     else {
-      meanSquare = meanSquare * residual + gradient.values.map(x => x * x) * (1 - residual)
+      meanSquare = meanSquare :* residual :+ gradient.values.map(x => x * x) :* (1 - residual)
     }
-    gradient :/ meanSquare * -1d
+    gradient :/ meanSquare :* -1d
   }
 }

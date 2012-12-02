@@ -20,7 +20,7 @@ class Connection(val in: LayerOutput, val out: LayerInput, var gd: GradientDesce
   var dEdw_cache: DenseMatrix[Double] = null
   def dEdw = dEdw_cache
   protected def dEdw_calc: DenseMatrix[Double] = {
-    in.y * out.dEdz.t :/ in.y.cols.toDouble
+    (in.y * out.dEdz.t) :/ in.y.cols.toDouble
   }
 
   def forward() = {

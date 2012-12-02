@@ -94,6 +94,7 @@ class ForwardBuilder {
   }
 
   implicit def FullConnection2Connection(meta: FullConnection): Connection = meta.inner
+
   class FullConnection(val in: LayerOutput, val out: LayerInput, val cg: Option[String]) {
     val inner = if (cg.isEmpty) new Connection(in, out, gd())
     else {

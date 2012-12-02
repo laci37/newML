@@ -20,6 +20,11 @@ class Net(val inputs: Seq[InputLayer], val outputs: Seq[NetOutput], val bias: Bi
     for (i ← (0 to outputs.size - 1)) outputs(i).targets = data(i)
   }
 
+  def loadExample(ex: BpnMultiExample)={ 
+    setInputs(ex.inputs)
+    setTargets(ex.targets)
+  }
+
   /**
    * Does a forward pass on the network, calculating the output.
    */ 

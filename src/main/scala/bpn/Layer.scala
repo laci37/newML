@@ -17,14 +17,14 @@ class Layer(_size: Int, actFun: (Double ⇒ Double), dactFun: (Double ⇒ Double
   protected var sumz: DenseMatrix[Double] = null
   def y = y_cache
   protected def y_calc: DenseMatrix[Double] = {
-    sumz = (for (i ← inputs) yield i.z).reduceLeft{ (a, b) ⇒ (a + b) }
+    sumz = (for (i ← inputs) yield i.z).reduceLeft(_ + _)
     sumz.values.map(actFun)
   }
 
   protected var dEdz_cache: DenseMatrix[Double] = null
   def dEdz = dEdz_cache
   protected def dEdz_calc: DenseMatrix[Double] = {
-    val sumdEdy = (for (o ← outputs) yield o.dEdy).fold(DenseMatrix.zeros[Double](size, inputs(0).z.cols))((a, b) ⇒ (a + b))
+    val sumdEdy = (for (o ← outputs) yield o.dEdy).reduceLeft(_ + _)
     val dydz = sumz.values.map(dactFun)
     sumdEdy :* dydz
   }

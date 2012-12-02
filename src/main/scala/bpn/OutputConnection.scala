@@ -7,7 +7,7 @@ class OutputConnection(val in: LayerOutput, Err: (Double, Double) => Double, dEr
   protected var targets_cache: DenseMatrix[Double] = null
   def targets = targets_cache
   def targets_=(value: DenseMatrix[Double]) = {
-    if (value.cols != in.size) throw new IllegalArgumentException("Bad matrix size")
+    if (value.rows != in.size) throw new IllegalArgumentException("Bad matrix size")
     targets_cache = value
   }
 

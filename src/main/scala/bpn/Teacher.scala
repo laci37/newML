@@ -1,62 +1,113 @@
 package bpn
 import breeze.linalg._
-class Teacher(val n: Net, var examples: (Seq[Seq[DenseVector[Double]]], Seq[Seq[DenseVector[Double]]])) {
-  var batchsize = examples._1.size
-  var random = false
+import breeze.data._
+import annotation.tailrec
+class Teacher(n: Net, dataset: Seq[BpnExample]) {
+  var batchSize = dataset.size
+  protected var off = 0 //the current offset in the dataset
 
-  def showExample(ex: (Seq[DenseMatrix[Double]], Seq[DenseMatrix[Double]])) = {
-    if (bpn.verbosity >= 100) println("show example")
-    n.setInputs(ex._1)
-    n.setTargets(ex._2)
+  //shows an example to the network, but does no learning pass
+  def showExample(ex:BpnMultiExample)={ 
+    n.loadExample(ex)
     n.propCycle()
   }
-
-  def fullBatchMatrices(): (Seq[DenseMatrix[Double]], Seq[DenseMatrix[Double]]) = {
-    val inputs = for (i <- (0 to examples._1(0).size - 1)) yield //iterate inputs
-    //iterate over all examples and construct matrix
-    DenseVector.horzcat[Double](examples._1(i) :_*)
-    val targets = for (i <- (0 to examples._2(0).size - 1)) yield //iterate outputs
-    //iterate over all examples and construct matrix
-      DenseVector.horzcat[Double](examples._2(i) :_*)
-
-    (inputs, targets)
+  
+  def learnCycle()={ 
+    n.loadExample(getExamples())
+    n.fullCycle()
   }
 
-  def miniBatchMatrices(indexes: Seq[Int]): (Seq[DenseMatrix[Double]], Seq[DenseMatrix[Double]]) = {
-    val inputs = for (i <- (0 to examples._1(0).size - 1)) yield //iterate inputs
-    DenseVector.horzcat[Double]((for (j <- indexes) yield examples._1(i)(j)) :_*)//iterate over all examples and construct matrix
-    val targets = for (i <- (0 to examples._2(0).size - 1)) yield //iterate outputs
-    DenseVector.horzcat[Double]((for (j <- indexes) yield examples._2(i)(j)) :_*) //iterate over all examples and construct matrix
-
-    (inputs, targets)
+  @tailrec final def learn(epochs: Int):Unit={ 
+    if(epochs<=0) return
+    learnCycle()
+    learn(epochs-1)
   }
 
-  protected var c = 0
-  def showBatch() = {
-    if (batchsize == 1) {
-      if (random) {
-        val index = scala.util.Random.nextInt(examples._1.size)
-        showExample((examples._1(index).map(v=>DenseVector.horzcat[Double](v)), examples._2(index).map(v=>DenseVector.horzcat[Double](v))))
-      } else {
-        showExample((examples._1(c).map(v=>DenseVector.horzcat[Double](v)), examples._2(c).map(v=>DenseVector.horzcat[Double](v))))
-        c = (c + 1) % examples._1.size
+  lazy val fullBatch = {
+    dataset.foldLeft[BpnMultiExample](EmptyMultiExample)(_ + _)
+  }
+
+  def miniBatch(indexes: Seq[Int]) = {
+    (for (i <- (indexes)) yield dataset(i)).foldLeft[BpnMultiExample](EmptyMultiExample)(_ + _)
+  }
+
+  
+  def getExamples(): BpnMultiExample = {
+    batchSize match {
+      case 1 => { //online
+        val res = dataset(off)
+        off += 1
+        res
       }
-    } else if (batchsize == examples._1.size) {
-      showExample(fullBatchMatrices)
-    } else {
-      val batch = if (random) {
-        scala.util.Random.shuffle((0 to examples._1.size - 1).toSeq).slice(0, batchsize)
-      } else {
-        c += batchsize
-        if (c <= examples._1.size) {
-          c - batchsize to c - 1
+      case a if (a < dataset.size) => { //minibatch 
+        if (off + batchSize <= dataset.size) {
+          val res = miniBatch(off until off + batchSize)
+          off += batchSize
+          res
         } else {
-          c = c - examples._1.size
-          (c - batchsize + examples._1.size to examples._1.size - 1) union (0 to c - 1)
+	  val res= miniBatch((off until dataset.size) union (0 until batchSize-(dataset.size-off)))
+	  off = batchSize-(dataset.size-off)
+	  res
         }
       }
-      showExample(miniBatchMatrices(batch))
+      case b if (b==dataset.size) => { 
+	fullBatch
+      }
+      case _ => { 
+	if(bpn.verbosity>=10) println(this+": wrong batchsize, defaulting to full batch")
+	fullBatch
+      }
     }
-    n.learn()
+  }
+
+  
+}
+
+class BpnExample(val inputs: Seq[DenseVector[Double]], val targets: Seq[DenseVector[Double]])
+  extends Example[Seq[DenseVector[Double]], Seq[DenseVector[Double]]] {
+
+  def features=inputs
+  def label=targets
+  var id=""
+
+  def this(input: DenseVector[Double], target: DenseVector[Double]) =
+    this(Seq(input), Seq(target))
+
+  def +(that: BpnExample) = {
+    val in = for (i <- 0 until inputs.length) yield DenseVector.horzcat(this.inputs(i), that.inputs(i))
+    val tgt = for (i <- 0 until targets.length) yield DenseVector.horzcat(this.targets(i), that.targets(i))
+    new BpnMultiExample(in, tgt)
+  }
+
+  def +(that: BpnMultiExample) = {
+    val asMulti=BpnExample.cast2BpnMultiExample(this)
+    asMulti + that
   }
 }
+
+object BpnExample {
+  implicit def cast2BpnMultiExample(from: BpnExample): BpnMultiExample = {
+    val in = for (i <- 0 until from.inputs.length) yield 
+      DenseMatrix.zeros[Double](from.inputs(i).size,1) := from.inputs(i)
+    val tgt = for (i <- 0 until from.targets.length) yield 
+      DenseMatrix.zeros[Double](from.targets(i).size,1) := from.targets(i)
+    new BpnMultiExample(in, tgt)
+  }
+}
+
+class BpnMultiExample(val inputs: Seq[DenseMatrix[Double]], val targets: Seq[DenseMatrix[Double]]) {
+  def +(that: BpnMultiExample):BpnMultiExample = {
+    val in = for (i <- 0 until inputs.length) yield DenseMatrix.horzcat(this.inputs(i), that.inputs(i))
+    val tgt = for (i <- 0 until targets.length) yield DenseMatrix.horzcat(this.targets(i), that.targets(i))
+    new BpnMultiExample(in, tgt)
+  }
+
+  def +(that: BpnExample):BpnMultiExample = {
+    val asMulti=BpnExample.cast2BpnMultiExample(that)
+    this + asMulti
+  }
+}
+
+object EmptyMultiExample extends BpnMultiExample(null,null){ 
+  override def +(that: BpnMultiExample):BpnMultiExample= that
+} 
