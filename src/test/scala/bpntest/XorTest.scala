@@ -31,9 +31,9 @@ class XorTest extends FunSuite {
     val t= new Teacher(net,dataset)
     t.showExample(t.fullBatch)
     val before=net.outputs(0).avgSumErr
-    t.learn(100)
+    t.learn(1000)
     val after=net.outputs(0).avgSumErr
-    assert(after<before, "error did not decrease in 100 epochs\n pre: "+before+" post: "+after)
+    assert(after<before, "error did not decrease in 1000 epochs\n pre: "+before+" post: "+after)
   }
 
 }

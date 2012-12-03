@@ -59,6 +59,7 @@ class Layer(_size: Int, actFun: (Double ⇒ Double), dactFun: (Double ⇒ Double
   }
 }
 
+//some basic layer classes
 class SigmoidLayer(size: Int) extends Layer(size, SigmoidLayer.sig _, SigmoidLayer.dsig _)
 
 object SigmoidLayer {
@@ -68,3 +69,10 @@ object SigmoidLayer {
 }
 
 class LinearLayer(size: Int) extends Layer(size, identity, x => 1d)
+
+class BinaryStochasticLayer(size:Int) extends Layer(size, BinaryStochasticLayer.act _, SigmoidLayer.dsig _)
+
+object BinaryStochasticLayer { 
+  import mathext.Implicits._
+  def act(x:Double)= SigmoidLayer.sig(x) ? 1d | 0d
+}

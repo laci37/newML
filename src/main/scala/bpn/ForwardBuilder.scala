@@ -65,6 +65,12 @@ class ForwardBuilder {
       res
     }
 
+    def binStoch(size:Int)={ 
+      val res = new NameWrapper(new BinaryStochasticLayer(size))
+      if (autoBias) connection from bias to res.inner
+      res
+    }
+
     def softmax(size: Int) = {
       val res = new NameWrapper(new Softmax(size))
       if (autoBias) connection from bias to res.inner
