@@ -15,23 +15,23 @@ class RBM(val visibleSize: Int, val hiddenSize: Int) {
   //access methods for expectations, these concatenate bias elements
   def visExpect = {
     val expect = tie.getOrElse(_visExpect)
-    DenseMatrix.vertcat(expect, DenseMatrix.ones[Double](1, expect.cols))
+    DenseMatrix.vertcat(expect, DenseVector.ones[Double](expect.cols).t)
   }
-  def hidExpect = DenseMatrix.vertcat(_hidExpect,DenseMatriy.ones[Double](1,_hidExpect.cols))
+  def hidExpect = DenseMatrix.vertcat(_hidExpect,DenseVector.ones[Double](_hidExpect.cols).t)
 
   var temp=1d
   def sigma(x: Double) = 1d / (1 + math.exp(-x/temp))
 
   /**
-   * updates visible vectors axpected value, resets tie
+   * updates visible vectors expected value, resets tie
    */
   def updateVisible() = {
     tie = None
-    _visExpect = (weights * sampleHidden).values.map(sigma _)
+    _visExpect = (weights * sampleHidden).values.map(sigma _).apply(0 to visibleSize, ::)
   }
 
   def updateHidden() = {
-    _hidExpect = (weights.t * sampleVisible).values.map(sigma _)
+    _hidExpect = (weights.t * sampleVisible).values.map(sigma _).apply(0 to hiddenSize, ::)
   }
 
   def sampleHidden() = hidExpect.values.map { d: Double => d ? 1d | 0d }
@@ -42,9 +42,9 @@ class RBM(val visibleSize: Int, val hiddenSize: Int) {
   def goodness(visible: DenseMatrix[Double], hidden: DenseMatrix[Double])={ 
     if(visible.rows!=visibleSize || hidden.rows!=hiddenSize || visible.cols!=hidden.cols)
       throw new IllegalArgumentException
-    val hiddenWithBias=DenseMatrix.vertcat(hidden,DenseMatrix.ones[Double](1,hidden.cols))
-    val visibleWithBias=DenseMatrix.vertcat(visible,DenseMatrix.ones[Double](1,visible.cols))
-    sum((weights * hiddenWithBias) :* visibleWithBias, Axis._0)
+    val hiddenWithBias=DenseMatrix.vertcat(hidden,DenseVector.ones[Double](hidden.cols).t)
+    val visibleWithBias=DenseMatrix.vertcat(visible,DenseVector.ones[Double](visible.cols).t)
+    sum((weights * hiddenWithBias) :* visibleWithBias, Axis._0) - weights(visibleSize, hiddenSize)
   }
 }
 
