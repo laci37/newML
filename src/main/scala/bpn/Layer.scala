@@ -2,7 +2,7 @@ package bpn
 
 import util.DebugInfo
 import breeze.linalg._
-class Layer(_size: Int, actFun: (Double ⇒ Double), dactFun: (Double ⇒ Double)) extends LayerOutput with LayerInput {
+class Layer(_size: Int, _actFun: (Double ⇒ Double), _dactFun: (Double ⇒ Double)) extends LayerOutput with LayerInput {
 
   var inputs = Seq[Connection]()
 
@@ -12,6 +12,9 @@ class Layer(_size: Int, actFun: (Double ⇒ Double), dactFun: (Double ⇒ Double
 
   protected var back_count = 0
   def size = _size
+
+  def actFun=_actFun
+  def dactFun=_dactFun
 
   protected var y_cache: DenseMatrix[Double] = null
   protected var sumz: DenseMatrix[Double] = null
@@ -70,9 +73,11 @@ object SigmoidLayer {
 
 class LinearLayer(size: Int) extends Layer(size, identity, x => 1d)
 
-class BinaryStochasticLayer(size:Int) extends Layer(size, BinaryStochasticLayer.act _, SigmoidLayer.dsig _)
+class BinaryStochasticLayer(size:Int, var sample:Boolean=true) extends Layer(size, null, SigmoidLayer.dsig _){ 
+  override def actFun=BinaryStochasticLayer.act(sample)
+}
 
 object BinaryStochasticLayer { 
   import mathext.Implicits._
-  def act(x:Double)= SigmoidLayer.sig(x) ? 1d | 0d
+  def act(sample:Boolean)(x:Double)= SigmoidLayer.sig(x) ? 1d | 0d
 }
