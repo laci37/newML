@@ -26,6 +26,8 @@ class OutputConnection(val in: LayerOutput, Err: (Double, Double) => Double, dEr
 
   override def forward() = {
     if (bpn.verbosity >= 80) println(this + "Error: " + avgSumErr)
+    super.forward()
   }
-  super.forward()
+  
+  def size=in.size
 }

@@ -27,11 +27,11 @@ class RBM(val visibleSize: Int, val hiddenSize: Int) {
    */
   def updateVisible() = {
     tie = None
-    _visExpect = (weights * sampleHidden).values.map(sigma _).apply(0 to visibleSize, ::)
+    _visExpect = (weights * sampleHidden).values.map(sigma _).apply(0 until visibleSize, ::)
   }
 
   def updateHidden() = {
-    _hidExpect = (weights.t * sampleVisible).values.map(sigma _).apply(0 to hiddenSize, ::)
+    _hidExpect = (weights.t * sampleVisible).values.map(sigma _).apply(0 until hiddenSize, ::)
   }
 
   def sampleHidden() = hidExpect.values.map { d: Double => d ? 1d | 0d }

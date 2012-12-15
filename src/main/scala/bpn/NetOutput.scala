@@ -40,4 +40,6 @@ trait NetOutput {
    * all training cases
    */
   def avgSumErr:Double
+
+  def size:Int
 }

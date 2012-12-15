@@ -1,5 +1,6 @@
 package bpn
 import breeze.linalg._
+import data._
 /**
  * Class for managing a neural network.
  */
@@ -13,6 +14,14 @@ class Net(val inputs: Seq[InputLayer], val outputs: Seq[NetOutput], val bias: Bi
     bias.setBatchSize(data(0).cols)
   }
 
+  def setInputs(data:DenseMatrix[Double])={
+    var off=0
+    for(i<-inputs) { 
+      i.y=data(off until off+i.size,::)
+      off+=i.size
+    }
+    bias.setBatchSize(data.cols)
+  }
   /**
    * Sets the target outputs of the network
    */
@@ -20,9 +29,17 @@ class Net(val inputs: Seq[InputLayer], val outputs: Seq[NetOutput], val bias: Bi
     for (i ← (0 to outputs.size - 1)) outputs(i).targets = data(i)
   }
 
-  def loadExample(ex: BpnMultiExample)={ 
-    setInputs(ex.inputs)
-    setTargets(ex.targets)
+  def setTargets(data:DenseMatrix[Double])={ 
+    var off=0
+    for(o<-outputs){ 
+      o.targets=data(off until off+o.size,::)
+      off+=o.size
+    }
+  }
+
+  def loadExample(ex: MatrixExample)={ 
+    setInputs(ex.features)
+    setTargets(ex.label)
   }
 
   /**
@@ -70,5 +87,9 @@ class Net(val inputs: Seq[InputLayer], val outputs: Seq[NetOutput], val bias: Bi
   def learn() = {
     inputs foreach { i ⇒ i.learn() }
     bias.learn()
+  }
+
+  def avgSumErr:Double={ 
+    (for(o<-outputs) yield o.avgSumErr).sum
   }
 }
