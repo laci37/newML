@@ -2,14 +2,15 @@ package bpntest
 import breeze.linalg._
 import bpn._
 import org.scalatest._
+import data._
 
 class XorTest extends FunSuite { 
   
   val dataset= Seq(
-    new BpnExample(DenseVector(0d,0d), DenseVector(0d)),
-    new BpnExample(DenseVector(0d,1d), DenseVector(1d)),
-    new BpnExample(DenseVector(1d,0d), DenseVector(1d)),
-    new BpnExample(DenseVector(1d,1d), DenseVector(0d))
+    new VectorExample(DenseVector(0d,0d), DenseVector(0d)),
+    new VectorExample(DenseVector(0d,1d), DenseVector(1d)),
+    new VectorExample(DenseVector(1d,0d), DenseVector(1d)),
+    new VectorExample(DenseVector(1d,1d), DenseVector(0d))
   )
 
   bpn.verbosity=0 //switch off al diag messages
@@ -29,10 +30,9 @@ class XorTest extends FunSuite {
   test("running xortest on default parameters") {
     val net = initNet()
     val t= new Teacher(net,dataset)
-    t.showExample(t.fullBatch)
-    val before=net.outputs(0).avgSumErr
+    val before=t.testErr
     t.learn(1000)
-    val after=net.outputs(0).avgSumErr
+    val after=t.testErr
     assert(after<before, "error did not decrease in 1000 epochs\n pre: "+before+" post: "+after)
   }
 
