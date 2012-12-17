@@ -1,6 +1,5 @@
 package bpn.recurrent
 import breeze.linalg._
-import breeze.data._
 import mathext.Implicits._
 import annotation.tailrec
 import bpn._
