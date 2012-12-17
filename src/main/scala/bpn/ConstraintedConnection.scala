@@ -24,7 +24,7 @@ class ConstraintedConnection(in: LayerOutput, out: LayerInput, gd: GradientDesce
    out.learn()
  }
 
- protected def changeWeights(delta:DenseMatrix[Double], caller:ConstraintedConnection)={ 
+ protected def changeWeights(delta:Matrix[Double], caller:ConstraintedConnection)={ 
    changedWeights=true
    weights+=delta
  }

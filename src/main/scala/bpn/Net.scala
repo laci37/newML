@@ -9,12 +9,12 @@ class Net(val inputs: Seq[InputLayer], val outputs: Seq[NetOutput], val bias: Bi
   /**
    * Sets all the inputs to the network
    */
-  def setInputs(data: Seq[DenseMatrix[Double]]) = {
+  def setInputs(data: Seq[Matrix[Double]]) = {
     for (i ← (0 to inputs.size - 1)) inputs(i).y = data(i)
     bias.setBatchSize(data(0).cols)
   }
 
-  def setInputs(data:DenseMatrix[Double])={
+  def setInputs(data:Matrix[Double])={
     var off=0
     for(i<-inputs) { 
       i.y=data(off until off+i.size,::)
@@ -25,11 +25,11 @@ class Net(val inputs: Seq[InputLayer], val outputs: Seq[NetOutput], val bias: Bi
   /**
    * Sets the target outputs of the network
    */
-  def setTargets(data: Seq[DenseMatrix[Double]]) = {
+  def setTargets(data: Seq[Matrix[Double]]) = {
     for (i ← (0 to outputs.size - 1)) outputs(i).targets = data(i)
   }
 
-  def setTargets(data:DenseMatrix[Double])={ 
+  def setTargets(data:Matrix[Double])={ 
     var off=0
     for(o<-outputs){ 
       o.targets=data(off until off+o.size,::)

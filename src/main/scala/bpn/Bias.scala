@@ -2,7 +2,7 @@ package bpn
 import  breeze.linalg._
 class BiasLayer extends LayerOutput {
   val size = 1
-  var y: DenseMatrix[Double] = null
+  var y: Matrix[Double] = null
   var outputs = Seq[ConnectionInput]()
   var backwardCallback: Option[(Any) ⇒ Unit] = None
   def backward() = {
