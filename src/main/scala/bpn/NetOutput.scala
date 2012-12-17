@@ -7,7 +7,7 @@ trait NetOutput {
   /**
    * target values to calculate the error and error derivatives from.
    */
-  var targets: DenseMatrix[Double]
+  var targets: Matrix[Double]
   
   /**
    * Calling this method starts a backward pass. To do the full pass,

@@ -7,20 +7,20 @@ import util.NanChecker._
 class Softmax(_size: Int) extends LayerInput with NetOutput with DebugInfo {
   var inputs = Seq[Connection]()
 
-  protected var targets_cache: DenseMatrix[Double] = null
+  protected var targets_cache: Matrix[Double] = null
   def targets = targets_cache
-  def targets_=(value: DenseMatrix[Double]) = {
+  def targets_=(value: Matrix[Double]) = {
     if (value.rows != size) throw new IllegalArgumentException("Bad matrix size")
     targets_cache = value
   }
 
   def size = _size
 
-  protected var y_cache: DenseMatrix[Double] = null
+  protected var y_cache: Matrix[Double] = null
   def y = y_cache
   // TODO: avoid exp (might produce large numbers, and unstable calculation)
-  protected def y_calc: DenseMatrix[Double] = {
-     val sumz: DenseMatrix[Double] = (for(i<-inputs) yield i.z).reduceLeft(_ + _)
+  protected def y_calc: Matrix[Double] = {
+     val sumz: Matrix[Double] = (for(i<-inputs) yield i.z).reduceLeft(_ + _)
      val expterms = sumz.values.map(math.exp _) 
      val normalizing = sum(expterms,Axis._0)
      nanCheck(sumz)
@@ -31,9 +31,9 @@ class Softmax(_size: Int) extends LayerInput with NetOutput with DebugInfo {
      res
   }
 
-  protected var dEdz_cache: DenseMatrix[Double]  = null
+  protected var dEdz_cache: Matrix[Double]  = null
   def dEdz = dEdz_cache
-  protected def dEdz_calc: DenseMatrix[Double] = {
+  protected def dEdz_calc: Matrix[Double] = {
     nanCheck(y - targets)
     y-targets
   }

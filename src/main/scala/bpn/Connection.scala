@@ -7,19 +7,19 @@ class Connection(val in: LayerOutput, val out: LayerInput, var gd: GradientDesce
   in.outputs = in.outputs :+ this
   out.inputs = out.inputs :+ this
 
-  var weights = DenseMatrix.tabulate(in.size,out.size)((r,c)=>rand.nextDouble()-0.5)
+  var weights:Matrix[Double] = DenseMatrix.tabulate(in.size,out.size)((r,c)=>rand.nextDouble()-0.5)
 
-  var z_cache: DenseMatrix[Double] = null //z values, columns represent samples, rows represent neurons 
+  var z_cache: Matrix[Double] = null //z values, columns represent samples, rows represent neurons 
   def z = z_cache
   protected def z_calc = (in.y.t * weights).t
 
-  var dEdy_cache: DenseMatrix[Double] = null //error derivatives for incoming outputs cols represent samples, rows neurons
+  var dEdy_cache: Matrix[Double] = null //error derivatives for incoming outputs cols represent samples, rows neurons
   def dEdy = dEdy_cache
-  protected def dEdy_calc: DenseMatrix[Double] = (weights * out.dEdz)
+  protected def dEdy_calc: Matrix[Double] = (weights * out.dEdz)
 
-  var dEdw_cache: DenseMatrix[Double] = null
+  var dEdw_cache: Matrix[Double] = null
   def dEdw = dEdw_cache
-  protected def dEdw_calc: DenseMatrix[Double] = {
+  protected def dEdw_calc: Matrix[Double] = {
     (in.y * out.dEdz.t) :/ in.y.cols.toDouble
   }
 

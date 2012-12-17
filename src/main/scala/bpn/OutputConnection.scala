@@ -4,9 +4,9 @@ class OutputConnection(val in: LayerOutput, Err: (Double, Double) => Double, dEr
   //structure setup
   in.outputs = in.outputs :+ this
 
-  protected var targets_cache: DenseMatrix[Double] = null
+  protected var targets_cache: Matrix[Double] = null
   def targets = targets_cache
-  def targets_=(value: DenseMatrix[Double]) = {
+  def targets_=(value: Matrix[Double]) = {
     if (value.rows != in.size) throw new IllegalArgumentException("Bad matrix size")
     targets_cache = value
   }
