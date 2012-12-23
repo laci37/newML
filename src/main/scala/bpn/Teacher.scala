@@ -31,3 +31,16 @@ class Teacher(n: Net, data: Seq[VectorExample]) {
   }
 }
 
+class OnlineTeacher(n:Net, provider:Iterator[VectorExample]) { 
+  
+  def learnCycle()={ 
+    n.loadExample(provider.next.asMulti)
+    n.fullCycle()
+  }
+
+  @tailrec final def learn(c:Int):Unit={
+    if(c<=0) return
+    learnCycle()
+    learn(c-1)
+  }
+}
