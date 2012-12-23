@@ -1,10 +1,10 @@
 package data
 
 
-class Dataset[T](val data: Seq[T]) {
+class Dataset[T](val data: Seq[T]) extends Iterator[T]{
 
   def training = data
-
+  
   var off = 0
   def nextBatch(size: Int): Seq[T] = {
     if (size > training.length || size < 1) throw new IllegalArgumentException
@@ -16,6 +16,14 @@ class Dataset[T](val data: Seq[T]) {
       off -= training.length
       pt1 union training.slice(0, off)
     }
+  }
+
+  def hasNext=true
+
+  def next={ 
+    val res=training(off)
+    off+=1;
+    res
   }
 
 }
