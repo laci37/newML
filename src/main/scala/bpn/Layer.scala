@@ -2,15 +2,18 @@ package bpn
 
 import util.DebugInfo
 import breeze.linalg._
+
 class Layer(_size: Int, _actFun: (Double ⇒ Double), _dactFun: (Double ⇒ Double)) extends LayerOutput with LayerInput {
 
   var inputs = Seq[Connection]()
-
-  protected var fwd_count = 0
-
   var outputs = Seq[ConnectionInput]()
 
   protected var back_count = 0
+  protected var weightSeqCount = 0
+  protected var fwd_count = 0
+  protected var loadWeightsCount = 0
+  protected var learnCount = 0
+
   def size = _size
 
   def actFun=_actFun
@@ -57,12 +60,33 @@ class Layer(_size: Int, _actFun: (Double ⇒ Double), _dactFun: (Double ⇒ Doub
   }
 
   def learn() = {
-    if (bpn.verbosity >= 100) println(this + " learn")
-    outputs foreach { o ⇒ o.learn() }
+    learnCount+=1
+    if(learnCount>=inputs.size){ 
+      if (bpn.verbosity >= 100) println(this + " learn")
+      outputs foreach { o ⇒ o.learn() }
+    }
+  }
+
+  def getWeightSeq={ 
+    weightSeqCount+=1
+    if(weightSeqCount>=inputs.size){ 
+      weightSeqCount=0
+      (outputs flatMap (_.getWeightSeq)).toList
+    } else List.empty
+  }
+
+  def loadWeights(data:List[Matrix[Double]]):List[Matrix[Double]]={ 
+    loadWeightsCount +=1
+    if(loadWeightsCount>=inputs.size){ 
+      loadWeightsCount=0
+      outputs.foldLeft(data)((d,o)=>o.loadWeights(d))
+    }
+    else data
   }
 }
 
 //some basic layer classes
+
 class SigmoidLayer(size: Int) extends Layer(size, SigmoidLayer.sig _, SigmoidLayer.dsig _)
 
 object SigmoidLayer {
@@ -71,7 +95,9 @@ object SigmoidLayer {
   def dsig(x: Double) = sig(x) * (1d - sig(x))
 }
 
+
 class LinearLayer(size: Int) extends Layer(size, identity, x => 1d)
+
 
 class BinaryStochasticLayer(size:Int, var sample:Boolean=true) extends Layer(size, null, SigmoidLayer.dsig _){ 
   override def actFun=BinaryStochasticLayer.act(sample)
@@ -81,3 +107,4 @@ object BinaryStochasticLayer {
   import mathext.Implicits._
   def act(sample:Boolean)(x:Double)= SigmoidLayer.sig(x) ? 1d | 0d
 }
+

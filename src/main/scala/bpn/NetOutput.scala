@@ -42,4 +42,10 @@ trait NetOutput {
   def avgSumErr:Double
 
   def size:Int
+
+  def getWeightSeq:List[Matrix[Double]] = List()
+
+  def loadWeights(data:List[Matrix[Double]]):List[Matrix[Double]]={ 
+    data
+  }
 }

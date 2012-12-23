@@ -48,6 +48,15 @@ class Connection(val in: LayerOutput, val out: LayerInput, var gd: GradientDesce
     out.learn()
   }
 
+  def getWeightSeq={ 
+    weights ::out.getWeightSeq
+  }
 
+  def loadWeights(data:List[Matrix[Double]]):List[Matrix[Double]]={ 
+    if(data.head.cols!=out.size || data.head.rows!=in.size)
+      throw new IllegalArgumentException("wrong matrix size")
+    weights = data.head.asInstanceOf[DenseMatrix[Double]]
+    out.loadWeights(data.tail)
+  }
 
 }

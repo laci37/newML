@@ -1,6 +1,7 @@
 package bpn
 import breeze.linalg._
 import data._
+
 /**
  * Class for managing a neural network.
  */
@@ -92,4 +93,17 @@ class Net(val inputs: Seq[InputLayer], val outputs: Seq[NetOutput], val bias: Bi
   def avgSumErr:Double={ 
     (for(o<-outputs) yield o.avgSumErr).sum
   }
+
+  /*
+   * Returns the seq of weight matrices. The order of this seq is guaranteed
+   * to remain the same if the creation script remains the same
+   */ 
+  def weightSeq:List[Matrix[Double]]={ 
+    (inputs flatMap ((i:InputLayer) => i.getWeightSeq)).toList ::: bias.getWeightSeq
+  }  
+
+  def loadWeights(data:Seq[Matrix[Double]])={ 
+    
+  }
 }
+

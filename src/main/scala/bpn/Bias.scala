@@ -23,4 +23,8 @@ class BiasLayer extends LayerOutput {
   def setBatchSize(size: Int) = {
     y = DenseVector.ones[Double](size).t
   }
+
+  def getWeightSeq:List[Matrix[Double]]={ 
+    (outputs flatMap (_.getWeightSeq)).toList
+  }
 }

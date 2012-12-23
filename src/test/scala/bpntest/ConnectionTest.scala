@@ -95,5 +95,7 @@ object ConnectionTest {
     def learn()={lrn=true }
     var backwd=false
     def backward()={backwd=true }
+    def getWeightSeq=null
+    def loadWeights(data:List[Matrix[Double]]):List[Matrix[Double]]=null
   }
 }

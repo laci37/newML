@@ -20,8 +20,17 @@ class InputLayer(override val size: Int) extends LayerOutput {
     if (bpn.verbosity >= 100) println(this + " forward begin")
     outputs foreach { o ⇒ o.forward() }
   }
+
   def learn() = {
     if (bpn.verbosity >= 100) println(this + " learn begin")
     outputs foreach { o ⇒ o.learn() }
+  }
+
+  def getWeightSeq={
+    (outputs flatMap (_.getWeightSeq)).toList
+  }
+
+  def loadWeights(data:List[Matrix[Double]]):List[Matrix[Double]]={ 
+    outputs.foldLeft(data)((d,o)=>o.loadWeights(d))
   }
 }

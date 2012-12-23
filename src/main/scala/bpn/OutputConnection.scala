@@ -30,4 +30,6 @@ class OutputConnection(val in: LayerOutput, Err: (Double, Double) => Double, dEr
   }
   
   def size=in.size
+
+  
 }

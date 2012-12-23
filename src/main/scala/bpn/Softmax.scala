@@ -59,4 +59,5 @@ class Softmax(_size: Int) extends LayerInput with NetOutput with DebugInfo {
       super.forward()
     }
   }
+
 }

@@ -5,4 +5,6 @@ trait ConnectionInput {
   def dEdy:DenseMatrix[Double]
   def forward()
   def learn()
+  def getWeightSeq:List[Matrix[Double]]
+  def loadWeights(data:List[Matrix[Double]]):List[Matrix[Double]]
 }

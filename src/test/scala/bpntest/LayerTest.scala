@@ -9,6 +9,8 @@ class LayerTest extends FunSuite {
     def forward()= fwd=true
     var lrn=false
     def learn()= lrn=true
+    def getWeightSeq=null
+    def loadWeights(data:List[Matrix[Double]]):List[Matrix[Double]]=null
   }
   
   class MockInput(out:Layer) extends Connection(null,out,null){ 

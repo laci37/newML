@@ -9,4 +9,6 @@ trait LayerInput extends DebugInfo{
   def forward()
   def learn()
   def backward()
+  def getWeightSeq:List[Matrix[Double]]
+  def loadWeights(data:List[Matrix[Double]]):List[Matrix[Double]]
 }
